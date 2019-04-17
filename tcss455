@@ -1,0 +1,171 @@
+#!/usr/bin/python3
+
+import sys
+import os
+import csv
+import time
+import classifer
+
+P_UID = 1
+L_UID = 0
+R_UID = 1
+R_LID = 2
+
+def genderString(g):
+	strings = {0:"male", 1:"female"}
+	return strings.get(g, "INVALID")
+
+def ageString(a):
+	strings = ["xx-24", "25-34", "35-49", "50-xx"]
+	if  (a<25): return strings[0]
+	elif(a<35): return strings[1]
+	elif(a<50): return strings[2]
+	else      : return strings[3]
+
+############################### PARSE ARGUMENTS ################################
+
+if len(sys.argv) < 5:
+	print("too few arguments")
+	exit()
+
+
+dirOut = None
+if(sys.argv[1] == "-o"):
+	dirOut = sys.argv[2]
+elif(sys.argv[3] == "-o"):
+	dirOut = sys.argv[4]
+else:
+	print("the -o parameter is required")
+	exit()
+
+dirIn = None
+if(sys.argv[1] == "-i"):
+	dirIn = sys.argv[2]
+elif(sys.argv[3] == "-i"):
+	dirIn = sys.argv[4]
+else:
+	print("the -i parameter is required")
+	exit()
+
+#print("dirOut: " + str(dirOut))
+#print("dirIn: " + str(dirIn))
+
+############################ BUILD AND VERIFY PATHS ############################
+
+if not os.path.exists(dirOut):
+	os.makedirs(dirOut)
+
+profilePath  = dirIn + '/profile/profile.csv'
+relationPath = dirIn + '/relation/relation.csv'
+liwcPath     = dirIn + '/LIWC/LIWC.csv'
+
+#print("profilePath : " + str(profilePath))
+#print("relationPath: " + str(relationPath))
+#print("liwcPath    : " + str(liwcPath))
+
+if( not os.path.isfile(profilePath)):
+	print("profile.csv does not exists")
+	exit()
+
+if( not os.path.isfile(relationPath)):
+	print("relation.csv does not exists")
+	exit()
+
+if( not os.path.isfile(liwcPath)):
+	print("LIWC.csv does not exists")
+	exit()
+
+############################ LOAD FILES INTO MEMORY ############################
+
+print("load data into memory")
+
+with open(liwcPath) as liwcFile:
+	liwcs = list(csv.reader(liwcFile))
+
+with open(relationPath) as relationFile:
+	relations = list(csv.reader(relationFile))
+
+################################ FOR EACH USER #################################
+
+print("classify data")
+
+with open(profilePath) as profiles:
+	profileReader = csv.reader(profiles)
+	
+	for profile in profileReader:
+		#startTime = time.time()
+		
+		if profile[P_UID] == "userid": # skip the header row
+			continue
+		
+		
+		####### get relational data for user
+		likes = []
+		like = None
+		for like in relations: # get to the first like
+			if(like[R_UID] != profile[P_UID]):
+				break
+		
+		while(like[R_UID] == profile[P_UID]):
+			likes.append(like[R_LID])
+			like = next(relationReader)
+		
+		
+		####### get LIWC data for user
+		liwc = None
+		for l in liwcs:
+			if profile[P_UID] == l[L_UID]:
+				liwc = l
+				break
+		
+		if(liwc == None):
+			print("ERROR: user "+profile[P_UID]+" not found in " + liwcPath)
+			exit()
+		
+		
+		####### open image and text files
+		textPath  = dirIn + '/text/'  + profile[P_UID] + '.txt'
+		imagePath = dirIn + '/image/' + profile[P_UID] + '.jpg'
+		
+		if( not os.path.isfile(textPath)):
+			print("ERROR: "+textPath+" does not exists")
+			exit()
+		
+		if( not os.path.isfile(imagePath)):
+			print("ERROR: "+imagePath+" does not exists")
+			exit()
+		
+		####### classify user
+		with open(textPath) as text, open(imagePath) as image:
+			(age, gender, openess, conscientiousness, extrovertion, agreeableness, neuroticism) = classifer.classify(image, text, liwc, likes)
+		
+		
+		####### write xml string
+		outString  = '<user\n'
+		outString += 'id="'    + profile[P_UID]
+		outString += '"\nage_group="' + ageString(age)
+		outString += '"\ngender="'    + genderString(gender)
+		outString += '"\nextrovert="' + str(extrovertion)
+		outString += '"\nneurotic="'  + str(neuroticism)
+		outString += '"\nagreeable="' + str(agreeableness)
+		outString += '"\nconscientious="' + str(conscientiousness)
+		outString += '"\nopen="'          + str(openess)
+		outString += '"\n/>\n'
+		
+		
+		####### write file
+		with open(dirOut + "/" + profile[P_UID] + ".xml", "w+") as outFile:
+			outFile.write(outString)
+
+		
+#		
+		
+#		with open(textPath) as text, open(imagePath) as image:
+#			
+
+
+
+
+print("done")
+
+
