@@ -1,4 +1,5 @@
 __pycache__
+.pylint.d
 
 Downloads
 Desktop
@@ -7,6 +8,7 @@ Desktop
 .config
 .local
 .ssh
+.profile
 
 .vscode
-.Mozilla
+.mozilla

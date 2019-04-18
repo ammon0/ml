@@ -4,7 +4,7 @@ import sys
 import os
 import csv
 import time
-import classifer
+import classifier
 
 P_UID = 1
 L_UID = 0
@@ -12,8 +12,10 @@ R_UID = 1
 R_LID = 2
 
 def genderString(g):
-	strings = {0:"male", 1:"female"}
-	return strings.get(g, "INVALID")
+	strings = ["male", "female"]
+
+	if(g<1): return strings[0]
+	else   : return strings[1]
 
 def ageString(a):
 	strings = ["xx-24", "25-34", "35-49", "50-xx"]
@@ -137,7 +139,7 @@ with open(profilePath) as profiles:
 		
 		####### classify user
 		with open(textPath) as text, open(imagePath) as image:
-			(age, gender, openess, conscientiousness, extrovertion, agreeableness, neuroticism) = classifer.classify(image, text, liwc, likes)
+			(age, gender, openess, conscientiousness, extrovertion, agreeableness, neuroticism) = classifier.classify(image, text, liwc, likes)
 		
 		
 		####### write xml string

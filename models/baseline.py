@@ -1,0 +1,7 @@
+MEDIAN_AGE    = 23
+MEDIAN_GENDER = 1
+MEAN_OPEN     = 3.909
+MEAN_CON      = 3.446
+MEAN_EXT      = 3.487
+MEAN_AGR      = 3.5839
+MEAN_NEU      = 2.732
