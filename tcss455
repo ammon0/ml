@@ -62,6 +62,9 @@ profilePath  = dirIn + '/profile/profile.csv'
 relationPath = dirIn + '/relation/relation.csv'
 liwcPath     = dirIn + '/LIWC/LIWC.csv'
 
+textPath  = dirIn + '/text/'
+imagePath = dirIn + '/image/'
+
 #print("profilePath : " + str(profilePath))
 #print("relationPath: " + str(relationPath))
 #print("liwcPath    : " + str(liwcPath))
@@ -86,7 +89,7 @@ liwcTable     = pandas.read_csv(liwcPath)
 relationTable = pandas.read_csv(relationPath, index_col=0)
 profileTable  = pandas.read_csv(profilePath, index_col=0)
 
-print(profileTable)
+#print(profileTable)
 
 #with open(liwcPath) as liwcFile:
 #	liwcs = list(csv.reader(liwcFile))
@@ -98,73 +101,92 @@ print(profileTable)
 
 print("classify data")
 
-with open(profilePath) as profiles:
-	profileReader = csv.reader(profiles)
+profiles = classifier.classify(profileTable,liwcTable,relationTable,imagePath,textPath)
+
+for index, row in profiles.iterrows():
+	####### write xml string
+	outString  = '<user\n'
+	outString += 'id="'               + row['userid']
+	outString += '"\nage_group="'     + ageString(row['age'])
+	outString += '"\ngender="'        + genderString(row['gender'])
+	outString += '"\nextrovert="'     + str(row['ext'])
+	outString += '"\nneurotic="'      + str(row['neu'])
+	outString += '"\nagreeable="'     + str(row['agr'])
+	outString += '"\nconscientious="' + str(row['con'])
+	outString += '"\nopen="'          + str(row['ope'])
+	outString += '"\n/>\n'
 	
-	for profile in profileReader:
-		#startTime = time.time()
-		
-		if profile[P_UID] == "userid": # skip the header row
-			continue
-		
-		
-		####### get relational data for user
-		likes = []
-		like = None
-		for like in relations: # get to the first like
-			if(like[R_UID] != profile[P_UID]):
-				break
-		
-		while(like[R_UID] == profile[P_UID]):
-			likes.append(like[R_LID])
-			like = next(relationReader)
-		
-		
-		####### get LIWC data for user
-		liwc = None
-		for l in liwcs:
-			if profile[P_UID] == l[L_UID]:
-				liwc = l
-				break
-		
-		if(liwc == None):
-			print("ERROR: user "+profile[P_UID]+" not found in " + liwcPath)
-			exit()
-		
-		
-		####### open image and text files
-		textPath  = dirIn + '/text/'  + profile[P_UID] + '.txt'
-		imagePath = dirIn + '/image/' + profile[P_UID] + '.jpg'
-		
-		if( not os.path.isfile(textPath)):
-			print("ERROR: "+textPath+" does not exists")
-			exit()
-		
-		if( not os.path.isfile(imagePath)):
-			print("ERROR: "+imagePath+" does not exists")
-			exit()
-		
-		####### classify user
-		with open(textPath) as text, open(imagePath) as image:
-			(age, gender, openess, conscientiousness, extrovertion, agreeableness, neuroticism) = classifier.classify(image, text, liwc, likes)
-		
-		
-		####### write xml string
-		outString  = '<user\n'
-		outString += 'id="'    + profile[P_UID]
-		outString += '"\nage_group="' + ageString(age)
-		outString += '"\ngender="'    + genderString(gender)
-		outString += '"\nextrovert="' + str(extrovertion)
-		outString += '"\nneurotic="'  + str(neuroticism)
-		outString += '"\nagreeable="' + str(agreeableness)
-		outString += '"\nconscientious="' + str(conscientiousness)
-		outString += '"\nopen="'          + str(openess)
-		outString += '"\n/>\n'
-		
-		
-		####### write file
-		with open(dirOut + "/" + profile[P_UID] + ".xml", "w+") as outFile:
-			outFile.write(outString)
+	####### write file
+	with open(dirOut + "/" + row['userid'] + ".xml", "w+") as outFile:
+		outFile.write(outString)
+
+#with open(profilePath) as profiles:
+#	profileReader = csv.reader(profiles)
+#	
+#	for profile in profileReader:
+#		#startTime = time.time()
+#		
+#		if profile[P_UID] == "userid": # skip the header row
+#			continue
+#		
+#		
+#		####### get relational data for user
+#		likes = []
+#		like = None
+#		for like in relations: # get to the first like
+#			if(like[R_UID] != profile[P_UID]):
+#				break
+#		
+#		while(like[R_UID] == profile[P_UID]):
+#			likes.append(like[R_LID])
+#			like = next(relationReader)
+#		
+#		
+#		####### get LIWC data for user
+#		liwc = None
+#		for l in liwcs:
+#			if profile[P_UID] == l[L_UID]:
+#				liwc = l
+#				break
+#		
+#		if(liwc == None):
+#			print("ERROR: user "+profile[P_UID]+" not found in " + liwcPath)
+#			exit()
+#		
+#		
+#		####### open image and text files
+#		textPath  = dirIn + '/text/'  + profile[P_UID] + '.txt'
+#		imagePath = dirIn + '/image/' + profile[P_UID] + '.jpg'
+#		
+#		if( not os.path.isfile(textPath)):
+#			print("ERROR: "+textPath+" does not exists")
+#			exit()
+#		
+#		if( not os.path.isfile(imagePath)):
+#			print("ERROR: "+imagePath+" does not exists")
+#			exit()
+#		
+#		####### classify user
+#		with open(textPath) as text, open(imagePath) as image:
+#			(age, gender, openess, conscientiousness, extrovertion, agreeableness, neuroticism) = classifier.classify(image, text, liwc, likes)
+#		
+#		
+#		####### write xml string
+#		outString  = '<user\n'
+#		outString += 'id="'    + profile[P_UID]
+#		outString += '"\nage_group="' + ageString(age)
+#		outString += '"\ngender="'    + genderString(gender)
+#		outString += '"\nextrovert="' + str(extrovertion)
+#		outString += '"\nneurotic="'  + str(neuroticism)
+#		outString += '"\nagreeable="' + str(agreeableness)
+#		outString += '"\nconscientious="' + str(conscientiousness)
+#		outString += '"\nopen="'          + str(openess)
+#		outString += '"\n/>\n'
+#		
+#		
+#		####### write file
+#		with open(dirOut + "/" + profile[P_UID] + ".xml", "w+") as outFile:
+#			outFile.write(outString)
 
 		
 #		
