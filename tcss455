@@ -86,16 +86,9 @@ if( not os.path.isfile(liwcPath)):
 print("load data into memory")
 
 liwcTable     = pandas.read_csv(liwcPath)
+liwcTable.rename(columns={"userId": "userid"}, inplace=True)
 relationTable = pandas.read_csv(relationPath, index_col=0)
 profileTable  = pandas.read_csv(profilePath, index_col=0)
-
-#print(profileTable)
-
-#with open(liwcPath) as liwcFile:
-#	liwcs = list(csv.reader(liwcFile))
-
-#with open(relationPath) as relationFile:
-#	relations = list(csv.reader(relationFile))
 
 ################################ FOR EACH USER #################################
 
@@ -106,7 +99,7 @@ profiles = classifier.classify(profileTable,liwcTable,relationTable,imagePath,te
 for index, row in profiles.iterrows():
 	####### write xml string
 	outString  = '<user\n'
-	outString += 'id="'               + row['userid']
+	outString += 'id="'               + str(row.name)
 	outString += '"\nage_group="'     + ageString(row['age'])
 	outString += '"\ngender="'        + genderString(row['gender'])
 	outString += '"\nextrovert="'     + str(row['ext'])
@@ -117,7 +110,7 @@ for index, row in profiles.iterrows():
 	outString += '"\n/>\n'
 	
 	####### write file
-	with open(dirOut + "/" + row['userid'] + ".xml", "w+") as outFile:
+	with open(dirOut + "/" + row.name + ".xml", "w+") as outFile:
 		outFile.write(outString)
 
 #with open(profilePath) as profiles:
