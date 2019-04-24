@@ -11,7 +11,7 @@ def classify(profileTable,liwcTable, textPath):
 	result = pandas.DataFrame(index=liwcTable.index)
 	
 	
-	genderTree = load('text/genderTree.joblib')
+	genderTree = load('/home/itadmin/MLProject/text/genderTree.joblib')
 	result['gender'] = genderTree.predict(liwcTable)
 	
 	
