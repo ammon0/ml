@@ -2,7 +2,8 @@
 
 import sys
 import os
-import csv
+#import csv
+import pandas
 import time
 import classifier
 
@@ -81,11 +82,17 @@ if( not os.path.isfile(liwcPath)):
 
 print("load data into memory")
 
-with open(liwcPath) as liwcFile:
-	liwcs = list(csv.reader(liwcFile))
+liwcTable     = pandas.read_csv(liwcPath)
+relationTable = pandas.read_csv(relationPath, index_col=0)
+profileTable  = pandas.read_csv(profilePath, index_col=0)
 
-with open(relationPath) as relationFile:
-	relations = list(csv.reader(relationFile))
+print(profileTable)
+
+#with open(liwcPath) as liwcFile:
+#	liwcs = list(csv.reader(liwcFile))
+
+#with open(relationPath) as relationFile:
+#	relations = list(csv.reader(relationFile))
 
 ################################ FOR EACH USER #################################
 
