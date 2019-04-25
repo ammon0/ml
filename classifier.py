@@ -13,7 +13,7 @@ header = ['userid','age','gender','ope','con','ext','agr','neu']
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def base(profileTable,liwcTable,relationTable,imagePath,textPath):
+def base(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
@@ -37,7 +37,7 @@ def base(profileTable,liwcTable,relationTable,imagePath,textPath):
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def week4(profileTable,liwcTable,relationTable,imagePath,textPath):
+def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER

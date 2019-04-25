@@ -105,7 +105,8 @@ print("classify data")
 profiles = classifier.classify(
 	profileTable,liwcTable,relationTable,
 	dirIn+dpp.IMAGE_SUFFIX,
-	dirIn+dpp.TEXT_SUFFIX
+	dirIn+dpp.TEXT_SUFFIX,
+	modulePath
 )
 
 ################################## WRITE FILES #################################
