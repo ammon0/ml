@@ -1,33 +1,28 @@
 #!/usr/bin/python3
 
 
+############################ FIND AND IMPORT MODULES ###########################
+
+SENTRY_FILE = '/classifier.py'
+
 import sys
 import os
 
-sys.path.insert(0,'/home/itadmin/ml')
-print(sys.path)
+modulePath = os.path.dirname(os.path.realpath(__file__))
 
-import pandas
-import time
+#print(modulePath + SENTRY_FILE)
+
+if(not os.path.isfile(modulePath + SENTRY_FILE)):
+	modulePath += '/ml'
+	if(not os.path.isfile(modulePath + SENTRY_FILE)):
+		print('could not find modules')
+	else:
+		sys.path.insert(0,modulePath)
+
 import classifier
+import dataPreProcess as dpp
 
-P_UID = 1
-L_UID = 0
-R_UID = 1
-R_LID = 2
-
-def genderString(g):
-	strings = ["male", "female"]
-
-	if(g<1): return strings[0]
-	else   : return strings[1]
-
-def ageString(a):
-	strings = ["xx-24", "25-34", "35-49", "50-xx"]
-	if  (a<25): return strings[0]
-	elif(a<35): return strings[1]
-	elif(a<50): return strings[2]
-	else      : return strings[3]
+print("successful import")
 
 ############################### PARSE ARGUMENTS ################################
 
@@ -62,43 +57,72 @@ else:
 if not os.path.exists(dirOut):
 	os.makedirs(dirOut)
 
-profilePath  = dirIn + '/profile/profile.csv'
-relationPath = dirIn + '/relation/relation.csv'
-liwcPath     = dirIn + '/LIWC/LIWC.csv'
+#profilePath  = dirIn + '/profile/profile.csv'
+#relationPath = dirIn + '/relation/relation.csv'
+#liwcPath     = dirIn + '/LIWC/LIWC.csv'
 
-textPath  = dirIn + '/text/'
-imagePath = dirIn + '/image/'
+#textPath  = dirIn + '/text/'
+#imagePath = dirIn + '/image/'
 
 #print("profilePath : " + str(profilePath))
 #print("relationPath: " + str(relationPath))
 #print("liwcPath    : " + str(liwcPath))
 
-if( not os.path.isfile(profilePath)):
-	print("profile.csv does not exists")
+#if( not os.path.isfile(profilePath)):
+#	print("profile.csv does not exists")
+#	exit()
+
+#if( not os.path.isfile(relationPath)):
+#	print("relation.csv does not exists")
+#	exit()
+
+#if( not os.path.isfile(liwcPath)):
+#	print("LIWC.csv does not exists")
+#	exit()
+
+
+if (not dpp.verify(dirIn)):
 	exit()
 
-if( not os.path.isfile(relationPath)):
-	print("relation.csv does not exists")
-	exit()
-
-if( not os.path.isfile(liwcPath)):
-	print("LIWC.csv does not exists")
-	exit()
 
 ############################ LOAD FILES INTO MEMORY ############################
 
 print("load data into memory")
 
-liwcTable     = pandas.read_csv(liwcPath)
-liwcTable.rename(columns={"userId": "userid"}, inplace=True)
-relationTable = pandas.read_csv(relationPath, index_col=0)
-profileTable  = pandas.read_csv(profilePath, index_col=0)
+#liwcTable     = pandas.read_csv(liwcPath)
+#liwcTable.rename(columns={"userId": "userid"}, inplace=True)
+#relationTable = pandas.read_csv(relationPath, index_col=0)
+#profileTable  = pandas.read_csv(profilePath, index_col=0)
 
-################################ FOR EACH USER #################################
+liwcTable     = dpp.loadLIWC(dirIn)
+relationTable = dpp.loadRelation(dirIn)
+profileTable  = dpp.loadProfile(dirIn)
+
+################################### CLASSIFY ###################################
 
 print("classify data")
 
-profiles = classifier.classify(profileTable,liwcTable,relationTable,imagePath,textPath)
+profiles = classifier.classify(
+	profileTable,liwcTable,relationTable,
+	dirIn+dpp.IMAGE_SUFFIX,
+	dirIn+dpp.TEXT_SUFFIX
+)
+
+################################## WRITE FILES #################################
+
+def genderString(g):
+	strings = ["male", "female"]
+
+	if(g<1): return strings[0]
+	else   : return strings[1]
+
+def ageString(a):
+	strings = ["xx-24", "25-34", "35-49", "50-xx"]
+	if  (a<25): return strings[0]
+	elif(a<35): return strings[1]
+	elif(a<50): return strings[2]
+	else      : return strings[3]
+
 
 for index, row in profiles.iterrows():
 	####### write xml string

@@ -10,6 +10,7 @@ def classify(profileTable,liwcTable, textPath):
 	liwcTable.set_index('userid', inplace=True)
 	result = pandas.DataFrame(index=liwcTable.index)
 	
+	# try logistic regression
 	
 	genderTree = load('/home/itadmin/ml/text/genderTree.joblib')
 	result['gender'] = genderTree.predict(liwcTable)
