@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 
+
 import sys
 import os
-#import csv
+
+sys.path.insert(0,'/home/itadmin/ml')
+print(sys.path)
+
 import pandas
 import time
 import classifier
