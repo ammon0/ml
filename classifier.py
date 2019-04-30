@@ -3,6 +3,7 @@ import pandas
 
 import baseline
 import textClassifier
+import likeClassifier
 
 #header = ['userid','age','gender','ope','con','ext','agr','neu']
 
@@ -57,6 +58,7 @@ def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 
 def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
+	#results = profileTable
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
 	results['ope']    = baseline.MEAN_OPEN
@@ -64,6 +66,8 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	results['ext']    = baseline.MEAN_EXT
 	results['agr']    = baseline.MEAN_AGR
 	results['neu']    = baseline.MEAN_NEU
+
+	results['gender'] = likeClassifier.likeLogReg(profileTable, relationTable).astype(int)
 	
 	return results
 
