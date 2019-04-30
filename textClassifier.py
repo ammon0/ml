@@ -1,12 +1,12 @@
 
 import pandas
 from sklearn import metrics
-from joblib import dump, load
+from joblib import load
 
 TESTING = False
 
 
-def classify(profileTable,liwcTable, textPath):
+def genderTree(profileTable,liwcTable):
 	liwcTable.set_index('userid', inplace=True)
 	result = pandas.DataFrame(index=liwcTable.index)
 	

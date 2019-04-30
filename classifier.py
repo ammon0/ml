@@ -3,8 +3,9 @@ import pandas
 
 import baseline
 import textClassifier
+import likeClassifier
 
-header = ['userid','age','gender','ope','con','ext','agr','neu']
+#header = ['userid','age','gender','ope','con','ext','agr','neu']
 
 ##	The baseline classifier
 #	@param profileTable the profile table as a DataFrame
@@ -48,14 +49,29 @@ def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results['neu']    = baseline.MEAN_NEU
 	
 	
-	textResults = textClassifier.classify(profileTable,liwcTable,textPath)
+	textResults = textClassifier.genderTree(profileTable,liwcTable)
 	results = results.assign(gender=textResults['gender'])
 	
 	return results
 
 
 
+def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	#results = profileTable
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+
+	results['gender'] = likeClassifier.likeLogReg(profileTable, relationTable).astype(int)
+	
+	return results
+
 
 # change this to use a different classifier
-classify = week4
+classify = jakeTesting
 
