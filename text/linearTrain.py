@@ -18,7 +18,7 @@ from sklearn.model_selection import KFold
 from sklearn                 import metrics
 from joblib                  import dump
 
-classes = ['age','ope','con','ext','agr','neu']
+#classes = ['age','ope','con','ext','agr','neu']
 
 ############################## COLLECT SAMPLE DATA #############################
 
@@ -31,7 +31,7 @@ trainingData = dpp.combineLIWC(dpp.loadProfile(dataPath), dpp.loadLIWC(dataPath)
 #print(trainingData)
 
 X = trainingData[dpp.LIWC]
-y = trainingData[classes]
+y = trainingData[dpp.CLASSES]
 
 #print(X)
 #print(y)
@@ -42,7 +42,7 @@ model = LinearRegression()
 
 folds = KFold(10,True)
 
-for classification in classes:
+for classification in dpp.CLASSES:
 	mean = 0.0
 	
 	print(classification)
