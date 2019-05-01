@@ -2,7 +2,7 @@ import pandas
 from sklearn import metrics
 from joblib import dump, load
 from sklearn.feature_extraction.text import CountVectorizer
-TESTING =True
+TESTING =False
 def likeLogReg(profileTable, relationTable):
     #print(profileTable)
     #print(relationTable)
