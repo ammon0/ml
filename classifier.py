@@ -57,8 +57,12 @@ def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 
 
 def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
-	results = pandas.DataFrame(index=profileTable['userid'])
 	#results = profileTable
+	#results = profileTable
+	#print('profileTable')
+	#print(profileTable)
+	results = pandas.DataFrame(index=profileTable['userid'])
+	
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
 	results['ope']    = baseline.MEAN_OPEN
@@ -66,9 +70,15 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	results['ext']    = baseline.MEAN_EXT
 	results['agr']    = baseline.MEAN_AGR
 	results['neu']    = baseline.MEAN_NEU
-
-	results['gender'] = likeClassifier.likeLogReg(profileTable, relationTable).astype(int)
-	
+	#print('0')
+	#print(results)
+	likeResults = likeClassifier.likeLogReg(profileTable,relationTable)
+	#print('likeResults')
+	#print(likeResults)
+	results['gender'] = likeResults['gender']
+	#print('5')
+	#print(results)
+	#print(results.count())
 	return results
 
 
