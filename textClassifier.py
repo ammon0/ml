@@ -1,5 +1,6 @@
 
 import pandas
+import dataPreProcess as dpp
 from sklearn import metrics
 from joblib import load
 
@@ -26,4 +27,22 @@ def genderTree(profileTable,liwcTable):
 	
 	
 	return result
+
+
+def liwcLinReg(profileTable, liwcTable, modulePath):
+	results = pandas.DataFrame(index=liwcTable['userid'],columns=dpp.CLASSES)
+	
+	model = load(modulePath + '/text/linearRegression.joblib')
+	results[dpp.CLASSES] = model.predict(liwcTable[dpp.LIWC])
+	
+	if TESTING:
+		copy = profileTable.set_index('userid')
+		copy.sort_index(inplace=True)
+		
+		results.sort_index(inplace=True)
+		
+		for c in dpp.CLASSES:
+			print(c + " RMSE: " + str(metrics.mean_squared_error(copy[c],results[c])))
+	
+	return results
 

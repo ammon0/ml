@@ -82,6 +82,40 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	return results
 
 
+##	The baseline classifier
+#
+#	Results of classifiers should be indexed by userid so that they can be
+#	combined
+#
+#	@param profileTable the profile table as a DataFrame
+#	@param liwcTable the LIWC table as a DataFrame
+#	@param relationTable the relation table as a DataFrame
+#	@param imagePath a string with the image directory
+#	@param textPath a string with the text directory
+#	@returns a profile table as a DataFrame
+def week5(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+	
+	textResults = textClassifier.liwcLinReg(profileTable,liwcTable,modulePath)
+	results['age'] = textResults['age']
+	results['ope'] = textResults['ope']
+	results['con'] = textResults['con']
+	results['agr'] = textResults['agr']
+	results['ext'] = textResults['ext']
+	results['neu'] = textResults['neu']
+	
+	likeResults = likeClassifier.likeLogReg(profileTable,relationTable)
+	results['gender'] = likeResults['gender']
+	
+	return results
+
 # change this to use a different classifier
-classify = jakeTesting
+classify = week5
 
