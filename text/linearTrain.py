@@ -17,6 +17,7 @@ from sklearn.linear_model    import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn                 import metrics
 from joblib                  import dump
+from numpy                   import sqrt
 
 #classes = ['age','ope','con','ext','agr','neu']
 
@@ -45,7 +46,7 @@ folds = KFold(10,True)
 for classification in dpp.CLASSES:
 	mean = 0.0
 	
-	print(classification)
+	#print(classification)
 	
 	#print(y[classification])
 	
@@ -57,17 +58,19 @@ for classification in dpp.CLASSES:
 	
 		model.fit(Xtrain, yTrain)
 	
-		accuracy = metrics.mean_squared_error(yTest,model.predict(Xtest))
-		print(accuracy)
+		accuracy = sqrt(metrics.mean_squared_error(yTest,model.predict(Xtest)))
+		#print('RMSE: ' + str(accuracy))
 		mean += accuracy
 	
 	mean /= 10
-	print(classification + " mean: " + str(mean))
+	print(classification + " mean RMSE: " + str(mean))
 	
 
 #################################### TRAIN #####################################
 
 model.fit(X, y)
+
+#print(list(zip(model.coef_, dpp.CLASSES)))
 
 ################################## SAVE MODEL ##################################
 
