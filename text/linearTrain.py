@@ -10,7 +10,7 @@
 import sys
 
 sys.path.insert(0,'../')
-import dataPreProcess as dpp
+import utility
 
 import pandas
 from sklearn.linear_model    import LinearRegression
@@ -24,15 +24,15 @@ from numpy                   import sqrt
 ############################## COLLECT SAMPLE DATA #############################
 
 dataPath = sys.argv[1]
-if not dpp.verify(dataPath):
+if not utility.verify(dataPath):
 	print("could not find data")
 	exit()
 
-trainingData = dpp.combineLIWC(dpp.loadProfile(dataPath), dpp.loadLIWC(dataPath))
+trainingData = utility.combineLIWC(utility.loadProfile(dataPath), utility.loadLIWC(dataPath))
 #print(trainingData)
 
-X = trainingData[dpp.LIWC]
-y = trainingData[dpp.CLASSES]
+X = trainingData[utility.LIWC]
+y = trainingData[utility.Y_NUMERICAL]
 
 #print(X)
 #print(y)
@@ -43,7 +43,7 @@ model = LinearRegression()
 
 folds = KFold(10,True)
 
-for classification in dpp.CLASSES:
+for classification in utility.Y_NUMERICAL:
 	mean = 0.0
 	
 	#print(classification)
@@ -70,7 +70,7 @@ for classification in dpp.CLASSES:
 
 model.fit(X, y)
 
-#print(list(zip(model.coef_, dpp.CLASSES)))
+#print(list(zip(model.coef_, utility.CLASSES)))
 
 ################################## SAVE MODEL ##################################
 
