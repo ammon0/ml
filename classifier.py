@@ -3,7 +3,8 @@ import pandas
 
 import baseline
 import textClassifier
-import likeClassifier
+import age_likesClassifier
+import gender_likesClassifier
 
 #header = ['userid','age','gender','ope','con','ext','agr','neu']
 
@@ -72,7 +73,7 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	results['neu']    = baseline.MEAN_NEU
 	#print('0')
 	#print(results)
-	likeResults = likeClassifier.likeLogReg(profileTable,relationTable)
+	likeResults = gender_likesClassifier.likeLogReg(profileTable,relationTable)
 	#print('likeResults')
 	#print(likeResults)
 	results['gender'] = likeResults['gender']
@@ -111,11 +112,40 @@ def week5(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results['ext'] = textResults['ext']
 	results['neu'] = textResults['neu']
 	
-	likeResults = likeClassifier.likeLogReg(profileTable,relationTable)
+	likeResults = gender_likesClassifier.likeLogReg(profileTable,relationTable)
 	results['gender'] = likeResults['gender']
 	
 	return results
 
+
+##	The baseline classifier
+#
+#	Results of classifiers should be indexed by userid so that they can be
+#	combined
+#
+#	@param profileTable the profile table as a DataFrame
+#	@param liwcTable the LIWC table as a DataFrame
+#	@param relationTable the relation table as a DataFrame
+#	@param imagePath a string with the image directory
+#	@param textPath a string with the text directory
+#	@returns a profile table as a DataFrame
+def week6(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+	
+	age_likeResults = age_likesClassifier.likeLogReg(profileTable,relationTable)
+	results['age'] = age_likeResults['age']
+
+	gender_likeResults = gender_likesClassifier.likeLogReg(profileTable,relationTable)
+	results['gender'] = gender_likeResults['gender']
+	
+	return results
 # change this to use a different classifier
-classify = week5
+classify = week6
 
