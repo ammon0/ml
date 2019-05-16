@@ -20,7 +20,7 @@ if(not os.path.isfile(modulePath + SENTRY_FILE)):
 		sys.path.insert(0,modulePath)
 
 import classifier
-import dataPreProcess as dpp
+import utility
 
 print("successful import")
 
@@ -81,7 +81,7 @@ if not os.path.exists(dirOut):
 #	exit()
 
 
-if (not dpp.verify(dirIn)):
+if (not utility.verify(dirIn)):
 	exit()
 
 
@@ -94,9 +94,9 @@ print("load data into memory")
 #relationTable = pandas.read_csv(relationPath, index_col=0)
 #profileTable  = pandas.read_csv(profilePath, index_col=0)
 
-liwcTable     = dpp.loadLIWC(dirIn)
-relationTable = dpp.loadRelation(dirIn)
-profileTable  = dpp.loadProfile(dirIn)
+liwcTable     = utility.loadLIWC(dirIn)
+relationTable = utility.loadRelation(dirIn)
+profileTable  = utility.loadProfile(dirIn)
 
 ################################### CLASSIFY ###################################
 
@@ -104,8 +104,8 @@ print("classify data")
 
 profiles = classifier.classify(
 	profileTable,liwcTable,relationTable,
-	dirIn+dpp.IMAGE_SUFFIX,
-	dirIn+dpp.TEXT_SUFFIX,
+	dirIn+utility.IMAGE_SUFFIX,
+	dirIn+utility.TEXT_SUFFIX,
 	modulePath
 )
 
