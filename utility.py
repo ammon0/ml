@@ -24,6 +24,8 @@ LIWC    = ['Seg', 'WC', 'WPS', 'Sixltr', 'Dic', 'Numerals', 'funct', 'pronoun', 
 
 LIWC_REDUCED = ['achieve', 'affect', 'AllPct', 'anger', 'Apostro', 'auxverb', 'bio', 'certain', 'Colon', 'Comma', 'conj', 'death', 'Dic', 'discrep', 'excl', 'Exclam', 'family', 'friend', 'hear', 'home', 'i', 'insight', 'leisure', 'money', 'motion', 'number', 'Numerals', 'OtherP', 'Parenth', 'past', 'Period', 'posemo', 'ppron', 'preps', 'present', 'pronoun', 'QMark', 'relativ', 'SemiC', 'sexual', 'shehe', 'Sixltr', 'social', 'swear', 'tentat', 'they', 'time', 'verb', 'WC', 'WPS', 'you']
 
+AGEGROUPS = ["xx-24", "25-34", "35-49", "50-xx"]
+
 def verify(path):
 	if( not os.path.isfile(path + PROFILE_SUFFIX)):
 		print("profile.csv does not exists")
@@ -58,24 +60,33 @@ def combineLIWC(profileTable, liwcTable):
 	unifiedTable = liwcTable.join(profileTable, on='userid')
 	return unifiedTable
 
-#def combineText(profileTable, path):
-#	textPath = path + TEXT_SUFFIX
-#	
-#	for row in profileTable:
-#		
+def age2group(row):
+	if  (row['age']<25): return AGEGROUPS[0]
+	elif(row['age']<35): return AGEGROUPS[1]
+	elif(row['age']<50): return AGEGROUPS[2]
+	else               : return AGEGROUPS[3]
 
-def ageGroup(row):
-	strings = ["xx-24", "25-34", "35-49", "50-xx"]
-	if  (row['age']<25): return strings[0]
-	elif(row['age']<35): return strings[1]
-	elif(row['age']<50): return strings[2]
-	else      : return strings[3]
+def group2age(row):
+	if  (row['ageCat'] == AGEGROUPS[0]): return 20
+	elif(row['ageCat'] == AGEGROUPS[1]): return 30
+	elif(row['ageCat'] == AGEGROUPS[1]): return 40
+	else                               : return 60
 
 def ageCategorize(profileTable):
 	df = profileTable.copy()
 	
 	df['ageCat'] = profileTable.apply(
-		lambda row: ageGroup(row), 
+		lambda row: age2group(row), 
+		axis=1
+	)
+	
+	return df
+
+def ageCat2age(profileTable):
+	df = profileTable.copy()
+	
+	df['age'] = profileTable.apply(
+		lambda row: group2age(row), 
 		axis=1
 	)
 	
