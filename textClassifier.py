@@ -49,3 +49,37 @@ def liwcLinReg(profileTable, liwcTable, modulePath):
 	
 	return results
 
+
+def liwcLogReg(profileTable, liwcTable, modulePath):
+	results = pandas.DataFrame(
+		index=liwcTable['userid'],
+		columns=utility.Y_CATEGORICAL
+	)
+	
+	genderModel = load(modulePath + '/text/genderLogReg.joblib')
+	ageModel    = load(modulePath + '/text/ageLogReg.joblib')
+	
+	results['ageCat'] = ageModel.predict(liwcTable[utility.LIWC])
+	results['gender'] = genderModel.predict(liwcTable[utility.LIWC])
+	
+	print(results)
+	
+	if TESTING:
+		copy = profileTable.set_index('userid')
+		copy.sort_index(inplace=True)
+		
+		copy = utility.ageCategorize(copy)
+		
+		results.sort_index(inplace=True)
+		
+		for c in utility.Y_CATEGORICAL:
+			print(c + " accuracy: " + str(metrics.accuracy_score(
+				copy[c],
+				results[c]
+			)))
+	
+	
+	return utility.ageCat2age(results)
+
+
+
