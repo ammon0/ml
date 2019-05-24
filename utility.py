@@ -46,7 +46,7 @@ def verify(path):
 def loadText(path):
 	liwcTable     = pandas.read_csv(path + LIWC_SUFFIX)
 	liwcTable.rename(columns={"userId": "userid"}, inplace=True)
-	liwcTable['rawText'] = ''
+	liwcTable['text'] = ''
 	
 	for userid in liwcTable['userid']:
 		with open(
@@ -56,19 +56,9 @@ def loadText(path):
 		) as textFile:
 			rawText = textFile.read()
 		
-		liwcTable.loc[liwcTable.userid == userid, 'rawText'] = rawText
+		liwcTable.loc[liwcTable.userid == userid, 'text'] = rawText
 	
 	return liwcTable
-
-
-#with open(
-#			path + TEXT_SUFFIX + userid + '.txt',
-#			'r',
-#			errors='replace'
-#		) as textFile:
-#			rawText = textFile.read()
-#		
-#		print(rawText)
 
 
 def loadRelation(path):

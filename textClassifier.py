@@ -82,7 +82,53 @@ def liwcLogReg(profileTable, liwcTable, modulePath):
 	return utility.ageCat2age(results)
 
 def rawText(profileTable, textTable, modulePath):
-	pass
+	from sys import path
+	path.insert(0,modulePath + '/text/')
+	import textPreProcess as tpp
+	
+	#print(textTable)
+	
+	print(tpp.normalize(" there's "))
+	print(tpp.normalize(" i'mma "))
+	
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.divideUpdates(t))
+	
+	# lowercase
+	textTable['text'] = textTable['text'].apply(lambda t: t.lower())
+	
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.removeURL(t))
+	
+	
+	textTable['text'] = textTable['text'].apply(
+		lambda t: tpp.reduceRepetition(t)
+	)
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.replaceEmojies(t))
+	
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.laughReduction(t))
+	
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.normalizeMoney(t))
+	
+	textTable['text'] = textTable['text'].apply(lambda t: tpp.normalize(t))
+	
+	textTable['text'] = textTable['text'].apply(
+		lambda t: tpp.noiseRemoval(t)
+	)
+#	
+#	textTable['text'].apply(
+#		lambda t: tpp.spellCorrect(t)
+#	)
+	
+#	textTable['text'] = textTable['text'].apply(
+#		lambda t: tpp.removeStopWords(t)
+#	)
+#	textTable['tList'] = textTable['text'].apply(
+#		lambda t: tpp.splitStatusUpdates(t)
+#	)
+	
+	textTable['text'].apply(lambda txt: print(txt + '\n'))
+	
+	#print(textTable['tList'])
+
 
 
 
