@@ -5,7 +5,7 @@ import baseline
 import textClassifier
 import age_likesClassifier
 import gender_likesClassifier
-
+import imageClassifier
 #header = ['userid','age','gender','ope','con','ext','agr','neu']
 
 ##	The baseline classifier
@@ -83,6 +83,37 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	return results
 
 
+def mattTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+        #results = profileTable
+        #results = profileTable
+        #print('profileTable')
+        #print(profileTable)
+        results = pandas.DataFrame(index=profileTable['userid'])
+        
+        results['age']    = baseline.MEDIAN_AGE
+        results['gender'] = baseline.MEDIAN_GENDER
+        results['ope']    = baseline.MEAN_OPEN
+        results['con']    = baseline.MEAN_CON
+        results['ext']    = baseline.MEAN_EXT
+        results['agr']    = baseline.MEAN_AGR
+        results['neu']    = baseline.MEAN_NEU
+        #print('0')
+        #print(results)
+        #likeResults = gender_likesClassifier.likeLogReg(profileTable,relationTable)
+        #imageResults = image_classifier.genderNN(profileTable, (imagePath+'/'+'')
+	#print('likeResults')
+        #print(likeResults)
+        #results['gender'] = imageResults['gender']
+        #print('5')
+        #print(results)
+        #print(results.count())
+
+        imageClassifier.imageGender(profileTable,modulePath,imagePath)
+
+        return results
+
+
+
 ##	The baseline classifier
 #
 #	Results of classifiers should be indexed by userid so that they can be
@@ -147,5 +178,6 @@ def week6(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	
 	return results
 # change this to use a different classifier
-classify = week6
+classify = mattTesting
+
 
