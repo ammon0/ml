@@ -57,44 +57,14 @@ else:
 if not os.path.exists(dirOut):
 	os.makedirs(dirOut)
 
-#profilePath  = dirIn + '/profile/profile.csv'
-#relationPath = dirIn + '/relation/relation.csv'
-#liwcPath     = dirIn + '/LIWC/LIWC.csv'
-
-#textPath  = dirIn + '/text/'
-#imagePath = dirIn + '/image/'
-
-#print("profilePath : " + str(profilePath))
-#print("relationPath: " + str(relationPath))
-#print("liwcPath    : " + str(liwcPath))
-
-#if( not os.path.isfile(profilePath)):
-#	print("profile.csv does not exists")
-#	exit()
-
-#if( not os.path.isfile(relationPath)):
-#	print("relation.csv does not exists")
-#	exit()
-
-#if( not os.path.isfile(liwcPath)):
-#	print("LIWC.csv does not exists")
-#	exit()
-
-
 if (not utility.verify(dirIn)):
 	exit()
-
 
 ############################ LOAD FILES INTO MEMORY ############################
 
 print("load data into memory")
 
-#liwcTable     = pandas.read_csv(liwcPath)
-#liwcTable.rename(columns={"userId": "userid"}, inplace=True)
-#relationTable = pandas.read_csv(relationPath, index_col=0)
-#profileTable  = pandas.read_csv(profilePath, index_col=0)
-
-liwcTable     = utility.loadLIWC(dirIn)
+textTable     = utility.loadText(dirIn)
 relationTable = utility.loadRelation(dirIn)
 profileTable  = utility.loadProfile(dirIn)
 
@@ -103,9 +73,8 @@ profileTable  = utility.loadProfile(dirIn)
 print("classify data")
 
 profiles = classifier.classify(
-	profileTable,liwcTable,relationTable,
+	profileTable,textTable,relationTable,
 	dirIn+utility.IMAGE_SUFFIX,
-	dirIn+utility.TEXT_SUFFIX,
 	modulePath
 )
 

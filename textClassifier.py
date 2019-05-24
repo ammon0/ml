@@ -81,5 +81,11 @@ def liwcLogReg(profileTable, liwcTable, modulePath):
 	
 	return utility.ageCat2age(results)
 
+def rawText(profileTable, textTable, modulePath):
+	pass
+
+
+
+
 
 

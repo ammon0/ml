@@ -3,9 +3,9 @@ import pandas
 
 import baseline
 import textClassifier
-import age_likesClassifier
-import gender_likesClassifier
-import imageClassifier
+#import age_likesClassifier
+#import gender_likesClassifier
+#import imageClassifier
 #header = ['userid','age','gender','ope','con','ext','agr','neu']
 
 ##	The baseline classifier
@@ -15,7 +15,7 @@ import imageClassifier
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def base(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def base(profileTable,textTable,relationTable,imagePath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
@@ -39,7 +39,7 @@ def base(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def week4(profileTable,textTable,relationTable,imagePath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
@@ -57,7 +57,7 @@ def week4(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 
 
 
-def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def jakeTesting(profileTable,textTable,relationTable,imagePath,modulePath):
 	#results = profileTable
 	#results = profileTable
 	#print('profileTable')
@@ -83,7 +83,7 @@ def jakeTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 	return results
 
 
-def mattTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def mattTesting(profileTable,textTable,relationTable,imagePath,modulePath):
         #results = profileTable
         #results = profileTable
         #print('profileTable')
@@ -125,7 +125,7 @@ def mattTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def week5(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def week5(profileTable,textTable,relationTable,imagePath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
@@ -160,7 +160,7 @@ def week5(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 #	@param imagePath a string with the image directory
 #	@param textPath a string with the text directory
 #	@returns a profile table as a DataFrame
-def week6(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
+def week6(profileTable,textTable,relationTable,imagePath,modulePath):
 	results = pandas.DataFrame(index=profileTable['userid'])
 	results['age']    = baseline.MEDIAN_AGE
 	results['gender'] = baseline.MEDIAN_GENDER
@@ -177,7 +177,23 @@ def week6(profileTable,liwcTable,relationTable,imagePath,textPath,modulePath):
 	results['gender'] = gender_likeResults['gender']
 	
 	return results
+
+
+def week9(profileTable,textTable,relationTable,imagePath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+	
+	textResults = textClassifier.rawText(profileTable,textTable,modulePath)
+	
+	return results
+
 # change this to use a different classifier
-classify = mattTesting
+classify = week9
 
 

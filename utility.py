@@ -42,11 +42,34 @@ def verify(path):
 	return True
 
 
-def loadLIWC(path):
+## Load all the text features into a single table for convenience
+def loadText(path):
 	liwcTable     = pandas.read_csv(path + LIWC_SUFFIX)
 	liwcTable.rename(columns={"userId": "userid"}, inplace=True)
+	liwcTable['rawText'] = ''
+	
+	for userid in liwcTable['userid']:
+		with open(
+			path + TEXT_SUFFIX + userid + '.txt',
+			'r',
+			errors = "replace"
+		) as textFile:
+			rawText = textFile.read()
+		
+		liwcTable.loc[liwcTable.userid == userid, 'rawText'] = rawText
 	
 	return liwcTable
+
+
+#with open(
+#			path + TEXT_SUFFIX + userid + '.txt',
+#			'r',
+#			errors='replace'
+#		) as textFile:
+#			rawText = textFile.read()
+#		
+#		print(rawText)
+
 
 def loadRelation(path):
 	return pandas.read_csv(path + RELATION_SUFFIX, index_col=0)
