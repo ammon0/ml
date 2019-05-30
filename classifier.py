@@ -89,7 +89,7 @@ def mattTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
         #print('profileTable')
         #print(profileTable)
         results = pandas.DataFrame(index=profileTable['userid'])
-        
+
         results['age']    = baseline.MEDIAN_AGE
         results['gender'] = baseline.MEDIAN_GENDER
         results['ope']    = baseline.MEAN_OPEN
@@ -108,8 +108,8 @@ def mattTesting(profileTable,liwcTable,relationTable,imagePath,textPath,modulePa
         #print(results)
         #print(results.count())
 
-        imageClassifier.imageGender(profileTable,modulePath,imagePath)
-
+        image_results=imageClassifier.imageGender(profileTable,modulePath,imagePath)
+        results['gender'] = image_results['gender']
         return results
 
 
