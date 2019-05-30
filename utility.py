@@ -24,6 +24,8 @@ LIWC    = ['Seg', 'WC', 'WPS', 'Sixltr', 'Dic', 'Numerals', 'funct', 'pronoun', 
 
 LIWC_REDUCED = ['achieve', 'affect', 'AllPct', 'anger', 'Apostro', 'auxverb', 'bio', 'certain', 'Colon', 'Comma', 'conj', 'death', 'Dic', 'discrep', 'excl', 'Exclam', 'family', 'friend', 'hear', 'home', 'i', 'insight', 'leisure', 'money', 'motion', 'number', 'Numerals', 'OtherP', 'Parenth', 'past', 'Period', 'posemo', 'ppron', 'preps', 'present', 'pronoun', 'QMark', 'relativ', 'SemiC', 'sexual', 'shehe', 'Sixltr', 'social', 'swear', 'tentat', 'they', 'time', 'verb', 'WC', 'WPS', 'you']
 
+TEXT = ['Seg', 'WC', 'WPS', 'Sixltr', 'Dic', 'Numerals', 'funct', 'pronoun', 'ppron', 'i', 'we', 'you', 'shehe', 'they', 'ipron', 'article', 'verb', 'auxverb', 'past', 'present', 'future', 'adverb', 'preps', 'conj', 'negate', 'quant', 'number', 'swear', 'social', 'family', 'friend', 'humans', 'affect', 'posemo', 'negemo', 'anx', 'anger', 'sad', 'cogmech', 'insight', 'cause', 'discrep', 'tentat', 'certain', 'inhib', 'incl', 'excl', 'percept', 'see', 'hear', 'feel', 'bio', 'body', 'health', 'sexual', 'ingest', 'relativ', 'motion', 'space', 'time', 'work', 'achieve', 'leisure', 'home', 'money', 'relig', 'death', 'assent', 'nonfl', 'filler', 'Period', 'Comma', 'Colon', 'SemiC', 'QMark', 'Exclam', 'Dash', 'Quote', 'Apostro', 'Parenth', 'OtherP', 'AllPct', 'text']
+
 AGEGROUPS = ["xx-24", "25-34", "35-49", "50-xx"]
 
 def verify(path):
@@ -114,10 +116,10 @@ def kFoldCrossRMSE(model, X, y, folds):
 	mean = 0.0
 	
 	for train_index, test_index in kf.split(X):
-		Xtrain = X.iloc[train_index]
-		Xtest  = X.iloc[test_index]
-		yTrain = y.iloc[train_index]
-		yTest  = y.iloc[test_index]
+		Xtrain = X[train_index]
+		Xtest  = X[test_index]
+		yTrain = y[train_index]
+		yTest  = y[test_index]
 	
 		model.fit(Xtrain, yTrain)
 	
@@ -133,10 +135,10 @@ def kFoldCrossAccuracy(model, X, y, folds):
 	mean = 0.0
 	
 	for train_index, test_index in kf.split(X):
-		Xtrain = X.iloc[train_index]
-		Xtest  = X.iloc[test_index]
-		yTrain = y.iloc[train_index]
-		yTest  = y.iloc[test_index]
+		Xtrain = X[train_index]
+		Xtest  = X[test_index]
+		yTrain = y[train_index]
+		yTest  = y[test_index]
 	
 		model.fit(Xtrain, yTrain)
 	

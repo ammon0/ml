@@ -7,6 +7,7 @@
 ################################################################################
 
 import re
+import pandas
 from spellchecker import SpellChecker
 
 # from: https://gist.github.com/sebleier/554280
@@ -33,70 +34,86 @@ STOP_WORDS = [
 POS_EMOTE = [
 	':)',':d',';)',';p','<3','^.^',':)','=d',':-)',':-]',':]', ':-3',':3',
 	':->',':>','8-)','8)',':-}',':}',':o)',':c)',':^)','=]','=)',':d','8d','xd',
-	'xd','=d','=3',':-))','d:<','d:','d8','d;','d=','dx',':p','xp','xp',':p',
+	'xd','=d','=3',':-))','d:<','d:','d8','d;','d=','dx',':p',':p',
 	':þ',':þ',':b','d:','=p','>:p',':-*',':*',':×',';)','*-)','*)', ';]',
 	';^)',';d','o:)','0:3','0:)','0;^)','>:)','}:)','3:)','>;)',":')",";-)",
-	"&hearts;",'t.t',"d':",'(:','[:','[x','^^'
+	"&hearts;","d':",'(:','[:','[x','^^'
 ]
 
 NEG_EMOTE = [
-	'-__-',":'(",':[',':-||','>:[',':{',':(',':c',':<','>:(',':l',
+	'-__-','-_-',":'(",':[',':-||','>:[',':{',':(',':c',':<','>:(',':l',
 	'=l',':s',':|',':$',':x',':o',':o',':-0','>:o',':/','>:\\','>:/',
 	':\\','=/','=\\',':@','=[','grr','meh','=(','=x','-.-',
-	'/:',']:',
+	'/:',']:','<_<','>_>','t.t','t-t','</3','>_<','>d'
 ]
 
-OTHER_EMOTE =['o_o','o.0','0.o','o.o','<_<','>_>','woo','yay']
+OTHER_EMOTE =['o_o','o.0','0.o','o.o','woo','yay']
 
 WORD_SEP = r"[\s,.]+"
 
 NORM_DIC = {
-	'1':'one','y':'why','nah':'no','sum1':'someone',
-	'fb':'facebook','acc':'account',"'net":'internet','wats':'what is',
+	# wont work with '
+	'b-day':'birthday','b-days':'birthdays','bday':'birthday',
+	'cuz':'because','bc':'because','coz':'because',
 	'u':'you','uu':'you','ya':'you',
-	'yr':'year', '&':'and','hw':'homework',
+	'sum1':'someone','som1':'someone',
+	'tmr':'tomorrow','tmrw':'tomorrow','2mrw':'tomorrow',
 	'thanx':'thanks','tnx':'thanks',
-	'ima':'i will',"i'mma":'i will','gona':'will','gonna':'will',
-	'cwap':'crap','bout':'about','dam':'damn',
+	'plz':'please','pls':'please',
+	'&':'and','n':'and','r':'are','w':'with','w/':'with',
+	'y':'why','nah':'no',
+	'fb':'facebook','acc':'account',"'net":'internet','wats':'whats',
+	'yr':'year', 'hw':'homework',
+	'bout':'about','dam':'damn',
 	'uni':'university',
-	'b-day':'birthday','b-days':'birthdays',
 	'lolz':'lol','lulz':'lol','yayz':'yay',
-	'tmr':'tomorrow','tmrw':'tomorrow',
-	'cuz':'because','bc':'because',
 	'b4':'before','tho':'though','+':'and','=':'is','postn':'posting',
-	"pj's":'pajamas','cant':"can't",'hv':'have','ppl':'people','bby':'baby',
-	"playin'":'playing',
+	'hv':'have','ppl':'people','bby':'baby',
 	'f-ing':'fucking','a$$':'ass',
 	'x-mas':'christmas',
-	"it's":'it is',"there's":'there is',"i'm":'i am',"doesn't":'does not',
-	"won't":'will not','cannot':'can not',"wasn't":'was not',"i've":'i have',
-	"i'll":'i will',"i'v":'i have',
-	"you're":'you are'
+	'1':'one','4':'for'
 }
 normalizeRE = re.compile(
-	WORD_SEP+'('+('|'.join(map(re.escape, NORM_DIC)))+')'+WORD_SEP
+	'\s+('+('|'.join(map(re.escape, NORM_DIC)))+')'+WORD_SEP
 )
+
+#"it's":'it is',"there's":'there is',
+#	"doesn't":'does not',
+#	"won't":'will not','cannot':'can not',"wasn't":'was not',"i've":'i have',
+#	"i'll":'i will',"i'v":'i have',"don't":'do not',"they're":'they are',
+#	"you're":'you are','theyre':'they are'
 
 #print(normalizeRE)
 #print(normalizeRE.groups)
 
 wordSplitRE = re.compile(WORD_SEP)
 
-SU_DIVIDER = "\n<><><> "
+SU_DIVIDER = "<><><>"
 
 WORD_LIST = [
-	'<><><>','posemote','negemote','icky','m&ms','','facebook','psy','forza',
-	'canceled','uploading','hmph','fml','wtf','youtube'
+	'posemote','negemote','icky','m&ms','','facebook','psy','forza',
+	'canceled','uploading','hmph','fml','wtf','youtube','gonna'
 ]
 
 spell = SpellChecker()
 spell.word_frequency.load_words(WORD_LIST)
 
 
-def divideUpdates(txt):
-	txt = SU_DIVIDER + txt
-	txt = re.sub(',{2,}', ',', txt)
-	return re.sub(',(?=[^ ])', SU_DIVIDER, txt)
+def splitStatusUpdates(table):
+	# remove repeated commas
+	txt = table['text'].apply(lambda t: re.sub(',{2,}', ',', t))
+	# a new column containing a list of status updates
+	updateList = txt.apply(lambda t: re.split(',(?=[^ ])', t))
+	
+	
+	# from: https://stackoverflow.com/questions/17116814/pandas-how-do-i-split-text-in-a-column-into-multiple-rows/17116976#17116976
+	updates = updateList.apply(pandas.Series, 1).stack()
+	updates.index = updates.index.droplevel(-1)
+	updates.name = 'status'
+	
+	table = table.join(updates)
+	del table['text']
+	return table
 
 def removeURL(txt):
 	return re.sub('(http|www)[^ ]+',' ', txt)
@@ -140,45 +157,59 @@ def normalize(txt):
 		return ' ' + NORM_DIC[match.group(1)] + ' '
 	
 	newTxt = normalizeRE.sub(translate, txt)
+	newTxt = normalizeRE.sub(translate, newTxt)
 	
 #	if(newTxt != txt):
-#		#print("\n\n" + txt + "\n")
+#		print(txt)
 #		print("\n"+newTxt+"\n\n")
 	
 	return newTxt
 
 def normalizeMoney(txt):
-	txt = txt = re.sub('\$[0-9]+',' $$ ',txt)
-	txt = txt = re.sub('[0-9]+k',' $$ ',txt)
+	txt = re.sub('\$[0-9]+',' $$ ',txt)
+	txt = re.sub('[0-9]+k',' $$ ',txt)
 	return txt
 
-##	Remove the escape character from newlines in the status updates
-#	Should follow emote conversion
-#def removeEscapes(txt):
-#	txt = txt.replace('\\\n','\n')
-#	return txt.replace('\\',' ')
 
 def noiseRemoval(txt):
-	txt = re.sub(r'([]0-9@%^*+=,./\\:;"~`_|(){}[-])+',' ',txt)
+	txt = re.sub(r"[^a-z $']",' ',txt)
 	
 	# single quotes
-	txt = re.sub("' ",' ',txt)
-	txt = re.sub(" '",' ',txt)
+	txt = re.sub("'",'',txt)
 	
 	return txt
 
 
 def spellCorrect(txt):
-	l = wordSplitRE.split(txt)
+	def correct(word):
+		if spell.unknown(word): return spell.correction(word)
+		else: return word
 	
-	misspelled = spell.unknown(l)
+	l = txt.split(' ')
 	
-	if len(misspelled) > 0:
-		print(txt)
+	#print("old: " +str(l))
 	
-	for word in misspelled:
-		# Get the one `most likely` answer
-		print('"'+ word + '"' + " -> " + spell.correction(word))
+	l = [correct(word) for word in l if word != '']
+	
+	#print("new: " + str(l))
+	
+	return ' '.join(l)
+
+import porterStemmer
+
+def stemmer(line):
+	output = ''
+	word = ''
+	p = porterStemmer.PorterStemmer()
+	for c in line:
+		if c.isalpha():
+			word += c.lower()
+		else:
+			if word:
+				output += p.stem(word, 0,len(word)-1)
+				word = ''
+			output += c.lower()
+	return output
 
 
 
@@ -188,14 +219,7 @@ def removeStopWords(txt):
 	return txt
 
 
-##	Split text into individual status updates.
-#
-#	The status updates appear to be separated by a comma without a space, whilst a
-#	user will typically place a space after commas
-def splitStatusUpdates(txt):
-	l = re.split(SU_DIVIDER, txt)
-	#del l[-1]
-	return l
+
 
 
 

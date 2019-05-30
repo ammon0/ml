@@ -86,46 +86,29 @@ def rawText(profileTable, textTable, modulePath):
 	path.insert(0,modulePath + '/text/')
 	import textPreProcess as tpp
 	
-	#print(textTable)
+	textTable = tpp.splitStatusUpdates(textTable)
 	
-	print(tpp.normalize(" there's "))
-	print(tpp.normalize(" i'mma "))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: t.lower())
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.removeURL(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.reduceRepetition(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.replaceEmojies(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.laughReduction(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.normalizeMoney(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.normalize(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.noiseRemoval(t))
+	textTable['status'] = textTable['status'].apply(
+		lambda t: tpp.stemmer(t))
 	
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.divideUpdates(t))
 	
-	# lowercase
-	textTable['text'] = textTable['text'].apply(lambda t: t.lower())
-	
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.removeURL(t))
-	
-	
-	textTable['text'] = textTable['text'].apply(
-		lambda t: tpp.reduceRepetition(t)
-	)
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.replaceEmojies(t))
-	
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.laughReduction(t))
-	
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.normalizeMoney(t))
-	
-	textTable['text'] = textTable['text'].apply(lambda t: tpp.normalize(t))
-	
-	textTable['text'] = textTable['text'].apply(
-		lambda t: tpp.noiseRemoval(t)
-	)
-#	
-#	textTable['text'].apply(
-#		lambda t: tpp.spellCorrect(t)
-#	)
-	
-#	textTable['text'] = textTable['text'].apply(
-#		lambda t: tpp.removeStopWords(t)
-#	)
-#	textTable['tList'] = textTable['text'].apply(
-#		lambda t: tpp.splitStatusUpdates(t)
-#	)
-	
-	textTable['text'].apply(lambda txt: print(txt + '\n'))
+	textTable['status'].apply(lambda txt: print(">>> " +txt))
 	
 	#print(textTable['tList'])
 
