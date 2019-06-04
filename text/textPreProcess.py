@@ -8,7 +8,7 @@
 
 import re
 import pandas
-from spellchecker import SpellChecker
+#from spellchecker import SpellChecker
 
 # from: https://gist.github.com/sebleier/554280
 STOP_WORDS = [
@@ -95,8 +95,8 @@ WORD_LIST = [
 	'canceled','uploading','hmph','fml','wtf','youtube','gonna'
 ]
 
-spell = SpellChecker()
-spell.word_frequency.load_words(WORD_LIST)
+#spell = SpellChecker()
+#spell.word_frequency.load_words(WORD_LIST)
 
 
 def splitStatusUpdates(table):
