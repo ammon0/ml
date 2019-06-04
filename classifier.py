@@ -3,9 +3,11 @@ import pandas
 
 import baseline
 import textClassifier
-#import age_likesClassifier
-#import gender_likesClassifier
-#import imageClassifier
+from statistics import mode,mean
+
+import age_likesClassifier
+import gender_likesClassifier
+import imageClassifier
 #header = ['userid','age','gender','ope','con','ext','agr','neu']
 
 ##	The baseline classifier
@@ -193,7 +195,46 @@ def week9(profileTable,textTable,relationTable,imagePath,modulePath):
 	
 	return results
 
+def week10(profileTable,textTable,relationTable,imagePath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+	
+	liwcLinR     = textClassifier.liwcLinReg(profileTable,textTable,modulePath)
+	logRegR      = textClassifier.liwcLogReg(profileTable,textTable,modulePath)
+	rawTextR     = textClassifier.rawText   (profileTable,textTable,modulePath)
+	age_likeR    = age_likesClassifier.likeLogReg(profileTable,relationTable)
+	gender_likeR = gender_likesClassifier.likeLogReg(profileTable,relationTable)
+	imageR       = imageClassifier.imageGender(profileTable,modulePath,imagePath)
+	
+	
+	for i in results.index:
+		results.loc[i,'gender'] = mode([
+			logRegR.loc[i,'gender'],
+			rawTextR.loc[i,'gender'],
+			baseline.MEDIAN_GENDER
+		])
+		
+		results.loc[i,'age'] = mean([
+			liwcLinR.loc[i,'age'].astype('int'),
+			logRegR .loc[i,'age'].astype('int'),
+			rawTextR.loc[i,'age'].astype('int')
+		])
+	
+	results['ope'] = liwcLinR['ope']
+	results['con'] = liwcLinR['con']
+	results['agr'] = liwcLinR['agr']
+	results['ext'] = liwcLinR['ext']
+	results['neu'] = liwcLinR['neu']
+	
+	return results
+
 # change this to use a different classifier
-classify = week9
+classify = week10
 
 

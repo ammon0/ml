@@ -19,7 +19,7 @@ IMAGE_SUFFIX    = '/image/'
 
 Y             = ['age','gender','ope','con','ext','agr','neu']
 Y_NUMERICAL   = ['age',         'ope','con','ext','agr','neu']
-Y_CATEGORICAL = ['ageCat', 'gender']
+Y_CATEGORICAL = ['age', 'gender']
 LIWC    = ['Seg', 'WC', 'WPS', 'Sixltr', 'Dic', 'Numerals', 'funct', 'pronoun', 'ppron', 'i', 'we', 'you', 'shehe', 'they', 'ipron', 'article', 'verb', 'auxverb', 'past', 'present', 'future', 'adverb', 'preps', 'conj', 'negate', 'quant', 'number', 'swear', 'social', 'family', 'friend', 'humans', 'affect', 'posemo', 'negemo', 'anx', 'anger', 'sad', 'cogmech', 'insight', 'cause', 'discrep', 'tentat', 'certain', 'inhib', 'incl', 'excl', 'percept', 'see', 'hear', 'feel', 'bio', 'body', 'health', 'sexual', 'ingest', 'relativ', 'motion', 'space', 'time', 'work', 'achieve', 'leisure', 'home', 'money', 'relig', 'death', 'assent', 'nonfl', 'filler', 'Period', 'Comma', 'Colon', 'SemiC', 'QMark', 'Exclam', 'Dash', 'Quote', 'Apostro', 'Parenth', 'OtherP', 'AllPct']
 
 LIWC_REDUCED = ['achieve', 'affect', 'AllPct', 'anger', 'Apostro', 'auxverb', 'bio', 'certain', 'Colon', 'Comma', 'conj', 'death', 'Dic', 'discrep', 'excl', 'Exclam', 'family', 'friend', 'hear', 'home', 'i', 'insight', 'leisure', 'money', 'motion', 'number', 'Numerals', 'OtherP', 'Parenth', 'past', 'Period', 'posemo', 'ppron', 'preps', 'present', 'pronoun', 'QMark', 'relativ', 'SemiC', 'sexual', 'shehe', 'Sixltr', 'social', 'swear', 'tentat', 'they', 'time', 'verb', 'WC', 'WPS', 'you']
@@ -76,10 +76,10 @@ def combineLIWC(profileTable, liwcTable):
 	return unifiedTable
 
 def age2group(row):
-	if  (row['age']<25): return AGEGROUPS[0]
-	elif(row['age']<35): return AGEGROUPS[1]
-	elif(row['age']<50): return AGEGROUPS[2]
-	else               : return AGEGROUPS[3]
+	if  (row['age']<25): return 20
+	elif(row['age']<35): return 30
+	elif(row['age']<50): return 40
+	else               : return 60
 
 def group2age(row):
 	if  (row['ageCat'] == AGEGROUPS[0]): return 20
@@ -90,7 +90,7 @@ def group2age(row):
 def ageCategorize(profileTable):
 	df = profileTable.copy()
 	
-	df['ageCat'] = profileTable.apply(
+	df['age'] = profileTable.apply(
 		lambda row: age2group(row), 
 		axis=1
 	)
