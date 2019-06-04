@@ -10,14 +10,18 @@ from numpy import sqrt
 TESTING = False
 
 
-def genderTree(profileTable,liwcTable):
-	liwcTable.set_index('userid', inplace=True)
-	result = pandas.DataFrame(index=liwcTable.index)
+def genderTree(profileTable,liwcTable, modulePath):
+	#liwcTable.set_index('userid', inplace=True)
+	#result = pandas.DataFrame(index=liwcTable.index)
+	result = pandas.DataFrame(
+		index=liwcTable['userid'],
+		columns=utility.Y_NUMERICAL
+	)
 	
 	# try logistic regression
 	
-	genderTree = load('/home/itadmin/ml/text/genderTree.joblib')
-	result['gender'] = genderTree.predict(liwcTable)
+	genderTree = load(modulePath + '/text/genderTree.joblib')
+	result['gender'] = genderTree.predict(liwcTable[utility.LIWC])
 	
 	
 	if TESTING:
@@ -37,6 +41,7 @@ def liwcLinReg(profileTable, liwcTable, modulePath):
 		index=liwcTable['userid'],
 		columns=utility.Y_NUMERICAL
 	)
+	results['age']    = baseline.MEDIAN_AGE
 	results['ope']    = baseline.MEAN_OPEN
 	results['con']    = baseline.MEAN_CON
 	results['ext']    = baseline.MEAN_EXT
@@ -142,7 +147,7 @@ def rawText(profileTable, textTable, modulePath):
 	
 	textTable['gender'] = genderModel.predict(X)
 	textTable['age']    = ageModel   .predict(X)
-	
+
 	for i in range(0,textTable.index[-1]):
 		uId = textTable.loc[i]['userid']
 		try: uId = uId.iloc[0]
