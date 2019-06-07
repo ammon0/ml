@@ -10,6 +10,10 @@
 import os
 import pandas
 
+from sklearn.model_selection import KFold
+from sklearn                 import metrics
+from numpy                   import sqrt
+
 
 PROFILE_SUFFIX  = '/profile/profile.csv'
 RELATION_SUFFIX = '/relation/relation.csv'
@@ -43,6 +47,12 @@ def verify(path):
 	
 	return True
 
+
+## Load all the text features into a single table for convenience
+def loadLIWC(path):
+	liwcTable     = pandas.read_csv(path + LIWC_SUFFIX)
+	liwcTable.rename(columns={"userId": "userid"}, inplace=True)
+	return liwcTable
 
 ## Load all the text features into a single table for convenience
 def loadText(path):
@@ -107,10 +117,6 @@ def ageCat2age(profileTable):
 	
 	return df
 
-from sklearn.model_selection import KFold
-from sklearn                 import metrics
-from numpy                   import sqrt
-
 def kFoldCrossRMSE(model, X, y, folds):
 	kf = KFold(folds,True)
 	mean = 0.0
@@ -135,10 +141,10 @@ def kFoldCrossAccuracy(model, X, y, folds):
 	mean = 0.0
 	
 	for train_index, test_index in kf.split(X):
-		Xtrain = X[train_index]
-		Xtest  = X[test_index]
-		yTrain = y[train_index]
-		yTest  = y[test_index]
+		Xtrain = X.loc[train_index]
+		Xtest  = X.loc[test_index]
+		yTrain = y.loc[train_index]
+		yTest  = y.loc[test_index]
 	
 		model.fit(Xtrain, yTrain)
 	

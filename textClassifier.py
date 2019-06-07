@@ -147,7 +147,8 @@ def rawText(profileTable, textTable, modulePath):
 	
 	textTable['gender'] = genderModel.predict(X)
 	textTable['age']    = ageModel   .predict(X)
-
+	
+	# ensamble status results for each user
 	for i in range(0,textTable.index[-1]):
 		uId = textTable.loc[i]['userid']
 		try: uId = uId.iloc[0]
@@ -156,6 +157,7 @@ def rawText(profileTable, textTable, modulePath):
 		try   : g = mode(textTable.loc[i]['gender'])
 		except: pass
 		
+		# mode is probably not adequate for age categories
 		try   : a = mode(textTable.loc[i]['age'].astype('int'))
 		except: pass
 		

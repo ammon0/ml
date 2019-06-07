@@ -34,11 +34,11 @@ trainingData = utility.ageCategorize(trainingData)
 X = trainingData[utility.LIWC]
 
 genderY = trainingData['gender']
-ageY    = trainingData['ageCat']
+ageY    = trainingData['age']
 
 
 #print(X)
-#print(y)
+#print(ageY)
 
 genderModel = LogisticRegression(
 	solver='liblinear',
@@ -57,7 +57,7 @@ print("  == gender ==")
 utility.kFoldCrossAccuracy(genderModel, X, trainingData['gender'], 10)
 
 print("  == ageCat ==")
-utility.kFoldCrossAccuracy(ageModel, X, trainingData['ageCat'], 3)
+utility.kFoldCrossAccuracy(ageModel, X, trainingData['age'], 3)
 
 
 #################################### TRAIN #####################################

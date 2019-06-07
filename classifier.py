@@ -205,7 +205,7 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	results['agr']    = baseline.MEAN_AGR
 	results['neu']    = baseline.MEAN_NEU
 	
-	treeResults  = textClassifier.genderTree(profileTable,textTable,modulePath)
+	#treeResults  = textClassifier.genderTree(profileTable,textTable,modulePath)
 	liwcLinR     = textClassifier.liwcLinReg(profileTable,textTable,modulePath)
 	logRegR      = textClassifier.liwcLogReg(profileTable,textTable,modulePath)
 	rawTextR     = textClassifier.rawText   (profileTable,textTable,modulePath)
@@ -216,18 +216,18 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	
 	for i in results.index:
 		results.loc[i,'gender'] = mode([
-			treeResults .loc[i,'gender'],
-			logRegR     .loc[i,'gender'],
-			rawTextR    .loc[i,'gender'],
-			gender_likeR.loc[i,'gender'],
-			imageR      .loc[i,'gender']
+#			treeResults .loc[i,'gender'],
+#			logRegR     .loc[i,'gender'],
+			rawTextR    .loc[i,'gender'], # ???
+			gender_likeR.loc[i,'gender'], # %81
+			imageR      .loc[i,'gender']  # %71?
 		])
 		
-		results.loc[i,'age'] = mean([
-			liwcLinR .loc[i,'age'].astype('int'),
-			logRegR  .loc[i,'age'].astype('int'),
-			rawTextR .loc[i,'age'].astype('int'),
-			age_likeR.loc[i,'age'].astype('int')
+		results.loc[i,'age'] = mean([ # taking the mean is not correct here
+			#liwcLinR .loc[i,'age'].astype('int'),
+			logRegR  .loc[i,'age'].astype('int'), # %67
+			rawTextR .loc[i,'age'].astype('int'), # ???
+			age_likeR.loc[i,'age'].astype('int')  # %67
 		])
 	
 	results['ope'] = liwcLinR['ope']
