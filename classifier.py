@@ -205,7 +205,7 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	results['agr']    = baseline.MEAN_AGR
 	results['neu']    = baseline.MEAN_NEU
 	
-	treeResults  = textClassifier.genderTree(profileTable,textTable,modulePath)
+	#treeResults  = textClassifier.genderTree(profileTable,textTable,modulePath)
 	liwcLinR     = textClassifier.liwcLinReg(profileTable,textTable,modulePath)
 	logRegR      = textClassifier.liwcLogReg(profileTable,textTable,modulePath)
 	rawTextR     = textClassifier.rawText   (profileTable,textTable,modulePath)
@@ -216,15 +216,15 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	
 	for i in results.index:
 		results.loc[i,'gender'] = mode([
-			treeResults .loc[i,'gender'],
-			logRegR     .loc[i,'gender'],
+			#treeResults .loc[i,'gender'],
+			#logRegR     .loc[i,'gender'],
 			rawTextR    .loc[i,'gender'],
 			gender_likeR.loc[i,'gender'],
 			imageR      .loc[i,'gender']
 		])
 		
 		results.loc[i,'age'] = mean([
-			liwcLinR .loc[i,'age'].astype('int'),
+			#liwcLinR .loc[i,'age'].astype('int'),
 			logRegR  .loc[i,'age'].astype('int'),
 			rawTextR .loc[i,'age'].astype('int'),
 			age_likeR.loc[i,'age'].astype('int')
@@ -235,10 +235,35 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	results['agr'] = liwcLinR['agr']
 	results['ext'] = liwcLinR['ext']
 	results['neu'] = liwcLinR['neu']
-	
 	return results
 
+
+def week10Fri(profileTable,textTable,relationTable,imagePath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+
+	liwcLinR     = textClassifier.liwcLinReg(profileTable,textTable,modulePath)
+	rawTextR     = textClassifier.rawText   (profileTable,textTable,modulePath)
+
+	results['gender'] = rawTextR['gender']
+	results['age']    = rawTextR['age']
+	
+	results['ope'] = liwcLinR['ope']
+	results['con'] = liwcLinR['con']
+	results['agr'] = liwcLinR['agr']
+	results['ext'] = liwcLinR['ext']
+	results['neu'] = liwcLinR['neu']
+	return results
+
+
+
 # change this to use a different classifier
-classify = week10
+classify = week10Fri
 
 

@@ -6,6 +6,7 @@
 
 
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import KFold
 from joblib import dump
 
 from sklearn.naive_bayes import MultinomialNB
@@ -78,7 +79,7 @@ print('preprocess complete {:.1f}s'.format(time.time() - startTime))
 ################################################################################
 
 
-cv = CountVectorizer(ngram_range=(1, 3),min_df=3)
+cv = CountVectorizer(ngram_range=(1, 1))
 #X = cv.fit_transform(trainingData['status'])
 cv.fit(trainingData['status'])
 print(len(cv.get_feature_names()))
@@ -96,6 +97,31 @@ print('vectorized {:.1f}s'.format(time.time() - startTime))
 
 
 model = MultinomialNB()
+
+
+kf = KFold(10,True)
+mean = 0.0
+
+for cl in utility.Y_CATEGORICAL:
+	print("  == " + cl + " ==")
+	for train_index, test_index in kf.split(trainingData):
+		Dtrain = trainingData['status'].iloc[train_index]
+		Dtest  = trainingData['status'].iloc[test_index]
+		yTrain = trainingData[cl].iloc[train_index]
+		yTest  = trainingData[cl].iloc[test_index]
+	
+		Xtrain = cv.transform(Dtrain)
+		Xtest  = cv.transform(Dtest)
+	
+		model.fit(Xtrain,yTrain)
+
+		acc = metrics.accuracy_score(yTest,model.predict(Xtest))
+		mean += acc
+		#print(acc)
+
+	mean /= 10
+	print("mean acc: " + str(mean))
+
 
 #for cl in utility.Y_CATEGORICAL:
 #	print("  == " + cl + " ==")
