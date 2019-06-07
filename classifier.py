@@ -235,10 +235,35 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	results['agr'] = liwcLinR['agr']
 	results['ext'] = liwcLinR['ext']
 	results['neu'] = liwcLinR['neu']
-	
 	return results
 
+
+def week10Fri(profileTable,textTable,relationTable,imagePath,modulePath):
+	results = pandas.DataFrame(index=profileTable['userid'])
+	results['age']    = baseline.MEDIAN_AGE
+	results['gender'] = baseline.MEDIAN_GENDER
+	results['ope']    = baseline.MEAN_OPEN
+	results['con']    = baseline.MEAN_CON
+	results['ext']    = baseline.MEAN_EXT
+	results['agr']    = baseline.MEAN_AGR
+	results['neu']    = baseline.MEAN_NEU
+
+	liwcLinR     = textClassifier.liwcLinReg(profileTable,textTable,modulePath)
+	rawTextR     = textClassifier.rawText   (profileTable,textTable,modulePath)
+
+	results['gender'] = rawTextR['gender']
+	results['age']    = rawTextR['age']
+	
+	results['ope'] = liwcLinR['ope']
+	results['con'] = liwcLinR['con']
+	results['agr'] = liwcLinR['agr']
+	results['ext'] = liwcLinR['ext']
+	results['neu'] = liwcLinR['neu']
+	return results
+
+
+
 # change this to use a different classifier
-classify = week10
+classify = week10Fri
 
 

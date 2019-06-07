@@ -155,11 +155,11 @@ def rawText(profileTable, textTable, modulePath):
 		except: pass
 		
 		try   : g = mode(textTable.loc[i]['gender'])
-		except: pass
+		except: pass # leave the baseline in case of tie
 		
 		# mode is probably not adequate for age categories
 		try   : a = mode(textTable.loc[i]['age'].astype('int'))
-		except: pass
+		except: a = 30 # in case of tie, favor second most common age group??
 		
 		results.loc[uId,'gender'] = g
 		results.loc[uId,'age'] = a
