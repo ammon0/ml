@@ -47,7 +47,7 @@ NEG_EMOTE = [
 	'/:',']:','<_<','>_>','t.t','t-t','</3','>_<','>d'
 ]
 
-OTHER_EMOTE =['o_o','o.0','0.o','o.o','woo','yay','eek']
+OTHER_EMOTE =['o_o','o.0','0.o','o.o','woo','yay']
 
 WORD_SEP = r"[\s,.]+"
 
@@ -62,7 +62,7 @@ NORM_DIC = {
 	'plz':'please','pls':'please',
 	'&':'and','n':'and','r':'are','w':'with','w/':'with',
 	'y':'why','nah':'no',
-	'fb':'facebook','acc':'account',"net":'internet','wats':'whats',
+	'fb':'facebook','acc':'account',"'net":'internet','wats':'whats',
 	'yr':'year', 'hw':'homework',
 	'bout':'about','dam':'damn',
 	'uni':'university',
@@ -174,8 +174,7 @@ def normalizeMoney(txt):
 def noiseRemoval(txt):
 	txt = re.sub(r"[^a-z $']",' ',txt)
 	
-	# removing apostrophes as a separate step because in contractions we don't
-	# want the apostrophe to be replaced by a space
+	# single quotes
 	txt = re.sub("'",'',txt)
 	
 	return txt

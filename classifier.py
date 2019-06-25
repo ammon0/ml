@@ -216,18 +216,18 @@ def week10(profileTable,textTable,relationTable,imagePath,modulePath):
 	
 	for i in results.index:
 		results.loc[i,'gender'] = mode([
-#			treeResults .loc[i,'gender'],
-#			logRegR     .loc[i,'gender'],
-			rawTextR    .loc[i,'gender'], # ???
-			gender_likeR.loc[i,'gender'], # %81
-			imageR      .loc[i,'gender']  # %71?
+			#treeResults .loc[i,'gender'],
+			#logRegR     .loc[i,'gender'],
+			rawTextR    .loc[i,'gender'],
+			gender_likeR.loc[i,'gender'],
+			imageR      .loc[i,'gender']
 		])
 		
-		results.loc[i,'age'] = mean([ # taking the mean is not correct here
+		results.loc[i,'age'] = mean([
 			#liwcLinR .loc[i,'age'].astype('int'),
-			logRegR  .loc[i,'age'].astype('int'), # %67
-			rawTextR .loc[i,'age'].astype('int'), # ???
-			age_likeR.loc[i,'age'].astype('int')  # %67
+			logRegR  .loc[i,'age'].astype('int'),
+			rawTextR .loc[i,'age'].astype('int'),
+			age_likeR.loc[i,'age'].astype('int')
 		])
 	
 	results['ope'] = liwcLinR['ope']

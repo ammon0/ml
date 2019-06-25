@@ -56,7 +56,7 @@ model = LogisticRegression(
 print(model.get_params())
 
 print("  == ageCat ==")
-utility.kFoldCrossAccuracy(model, X, trainingData['ageCat'], SLOW_FOLDS)
+utility.kFoldCrossAccuracy(model, X, trainingData['age'], SLOW_FOLDS)
 
 ################################# DECISION TREE ################################
 

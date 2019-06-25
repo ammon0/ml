@@ -10,10 +10,9 @@ from sklearn.model_selection import KFold
 from joblib import dump
 
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.model_selection import KFold
-from sklearn                 import metrics
-from numpy                   import sqrt
-import numpy
+from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+from numpy import sqrt
 
 import time
 
@@ -38,13 +37,9 @@ if not utility.verify(dataPath):
 
 print('loading data')
 pt = utility.loadProfile(dataPath)
-#pt = utility.ageCategorize(pt)
+pt = utility.ageCategorize(pt)
 
-table = utility.combineLIWC(pt, utility.loadText(dataPath))
-
-if table.isnull().values.any():
-	print('combined table has missing values')
-
+trainingData = utility.combineLIWC(pt, utility.loadText(dataPath))
 print('data loaded {:.1f}s'.format(time.time() - startTime))
 
 
@@ -55,78 +50,26 @@ print('data loaded {:.1f}s'.format(time.time() - startTime))
 
 print('preprocessing')
 
-#table['text'].apply(lambda txt: print(">>> " +txt))
+trainingData = tpp.splitStatusUpdates(trainingData) #99655 features
 
-table = tpp.splitStatusUpdates(table) #99655 features
-
-table['status'] = table['status'].apply( # 99655 features
+trainingData['status'] = trainingData['status'].apply( # 99655 features
 	lambda t: t.lower())
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('start ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 98254 features
+trainingData['status'] = trainingData['status'].apply( # 98254 features
 	lambda t: tpp.removeURL(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('without URLs ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 95171 features
+trainingData['status'] = trainingData['status'].apply( # 95171 features
 	lambda t: tpp.reduceRepetition(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('without repeats ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 94971 features
+trainingData['status'] = trainingData['status'].apply( # 94971 features
 	lambda t: tpp.replaceEmojies(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('normalized emoji ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 94822 features
+trainingData['status'] = trainingData['status'].apply( # 94822 features
 	lambda t: tpp.laughReduction(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('normalized laughs ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 94748 features
+trainingData['status'] = trainingData['status'].apply( # 94748 features
 	lambda t: tpp.normalizeMoney(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('normalized money ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 94748 features
+trainingData['status'] = trainingData['status'].apply( # 94748 features
 	lambda t: tpp.normalize(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('normalize dictionary ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 91392 features
+trainingData['status'] = trainingData['status'].apply( # 91392 features
 	lambda t: tpp.noiseRemoval(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('noise removed ' + str(len(cv.get_feature_names())))
-
-table['status'] = table['status'].apply( # 72581 features
+trainingData['status'] = trainingData['status'].apply( # 72581 features
 	lambda t: tpp.stemmer(t))
-
-#cv = CountVectorizer(ngram_range=(1, 1))
-#cv.fit(table['status'])
-#print('porter stemmed ' + str(len(cv.get_feature_names())))
-
-#table['status'].apply(lambda txt: print(">>> " +txt))
-#exit()
-
-if table.isnull().values.any():
-	print('combined table has missing values after preprocessing')
 
 print('preprocess complete {:.1f}s'.format(time.time() - startTime))
 
@@ -136,12 +79,11 @@ print('preprocess complete {:.1f}s'.format(time.time() - startTime))
 ################################################################################
 
 
-
 cv = CountVectorizer(ngram_range=(1, 1))
 #X = cv.fit_transform(trainingData['status'])
 cv.fit(trainingData['status'])
 print(len(cv.get_feature_names()))
-
+#print(cv.get_feature_names())
 
 dump(cv, "countVector.joblib")
 
@@ -155,37 +97,6 @@ print('vectorized {:.1f}s'.format(time.time() - startTime))
 
 
 model = MultinomialNB()
-X = cv.transform(table['status'])
-
-print(type(X))
-if numpy.isnan(X).any():
-	print("NaN's")
-
-kf = KFold(10,True)
-
-
-mean = 0.0
-	
-for train_index, test_index in kf.split(X):
-	Xtrain = X[train_index]
-	Xtest  = X[test_index]
-	yTrain = table['gender'].loc[train_index]
-	yTest  = table['gender'].loc[test_index]
-
-	model.fit(Xtrain, yTrain)
-
-	accuracy = metrics.accuracy_score(yTest,model.predict(Xtest))
-	print(accuracy)
-	mean += accuracy
-
-mean /= folds
-print("mean accuracy: " + str(mean))
-
-#def kFoldCrossAccuracy(model, X, y, folds):
-#	
-#	
-#	
-	
 
 
 kf = KFold(10,True)
@@ -214,7 +125,7 @@ for cl in utility.Y_CATEGORICAL:
 
 #for cl in utility.Y_CATEGORICAL:
 #	print("  == " + cl + " ==")
-#	utility.kFoldCrossAccuracy(model, X, table[cl], 10)
+#	utility.kFoldCrossAccuracy(model, X, trainingData[cl], 10)
 
 
 ################################################################################
@@ -222,11 +133,13 @@ for cl in utility.Y_CATEGORICAL:
 ################################################################################
 
 
+X = cv.transform(trainingData['status'])
+
 for cl in utility.Y_CATEGORICAL:
 	print("  == " + cl + " ==")
-	model.fit(X, table[cl])
+	model.fit(X, trainingData[cl])
 	y_predicted = model.predict(X)
-	print(cl + " Accuracy: %.2f" % metrics.accuracy_score(table[cl],y_predicted))
+	print(cl + " Accuracy: %.2f" % metrics.accuracy_score(trainingData[cl],y_predicted))
 	dump(model, cl +"RawNB.joblib")
 
 

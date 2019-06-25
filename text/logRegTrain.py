@@ -38,7 +38,7 @@ ageY    = trainingData['age']
 
 
 #print(X)
-#print(ageY)
+#print(y)
 
 genderModel = LogisticRegression(
 	solver='liblinear',
